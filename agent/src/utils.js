@@ -15,7 +15,15 @@ function printError(err) {
     }
 }
 
+function makeResponse(status, data) {
+    return {
+        status: status,
+        data: data
+    }
+}
+
 module.exports = { 
     makeError,
-    printError
+    printError,
+    makeResponse
 }

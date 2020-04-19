@@ -22,6 +22,7 @@ async function notifyAgent() {
         }
         console.log('Server response: ', response.data.data);
     } catch(err) {
+        // Агент должен корректно обрабатывать ситуацию, когда при старте не смог соединиться с сервером.
         if (err.isAxiosError && err.errno === ENOTFOUND) {
             console.log('BUILD SERVER IS NOT RUNNING. TERMINATE THIS AGENT WITH CODE: ', SERVER_NOT_RUNNING); 
         }

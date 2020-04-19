@@ -97,7 +97,7 @@ async function getNextBuild() {
 // отправить билд-агенту команду о том, что надо собрать сборку
 async function startBuild(nextBuild) {
     console.log('startBuild');
-    const agent = getFreeAgent();
+    const agent = await getFreeAgent();
     if (!agent) return false;
     const response = await axios.post(`${agent.host}:${agent.port}${URL_AGENT_BUILD}`, nextBuild);
     if (response.status === 200) {
@@ -135,7 +135,7 @@ async function processBuilds() {
             const isRun = await startBuild(nextBuild);
             // отправить POST на /build/start с buildId и dateTime
             if (isRun) {
-                await postStartBuild(nextBuild.buildId, dateTime);
+                //await postStartBuild(nextBuild.buildId, dateTime);
             }
         }
     } catch(err) {

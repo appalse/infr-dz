@@ -1,6 +1,6 @@
 const path = require('path');
 
-const BUILD_REQUEST_DELAY = 2000;
+const BUILD_REQUEST_DELAY = 5000;
 
 // настройки из конфига билд сервера
 const config = require(path.resolve(__dirname, './../server-conf.json'));

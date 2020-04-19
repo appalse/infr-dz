@@ -8,10 +8,10 @@ function makeError(status, message) {
 
 function printError(err) {
     if (err.status && err.data) {
-        console.log('ERROR STATUS: ', err.status);
-        console.log('ERROR DATA: ', err.data);
+        console.error('ERROR STATUS: ', err.status);
+        console.error('ERROR DATA: ', err.data);
     } else {
-        console.log('ERROR: ', err);
+        console.error('ERROR: ', err);
     }
 }
 

@@ -8,7 +8,7 @@ const { API_BASE_URL, API_TOKEN,
         URL_AGENT_BUILD,
         API_BUILD_LIST_PARAMS} = require('./constants');
 const {makeError, printError} = require('./utils');
-const {getFreeAgent} = require('./agentList');
+const {agentList, getFreeAgent} = require('./agentList');
 
 // build api
 const api = axios.create({
@@ -22,7 +22,7 @@ async function getConfigDetails() {
     const response = await api.get(URL_API_CONF);
     if (response.status !== 200) {
         console.log(`ERROR IN RESPONSE OF CONFIGURATION SETTINGS FROM ${API_BASE_URL}`);
-        throw makeError(response.status, 'getConfigDetails=> ' + JSON.stringify(response));
+        throw makeError(response.status, 'getConfigDetails=> ' + JSON.stringify(response.data));
     }
     if (!response.data || !response.data.data) {
         console.log(`NO CONFIGURATION SETTINGS FOUND ON ${API_BASE_URL}`);
@@ -36,6 +36,7 @@ async function getConfigDetails() {
 }
 
 async function selectBuild(currentConfigId, buildsList) {
+    console.log('buildsList: ', buildsList);
     let result = null;
     let currentBuildNumber = Number.MAX_SAFE_INTEGER;
     // выбрать из массива билд с "status": "Waiting" и 
@@ -59,7 +60,7 @@ async function selectBuild(currentConfigId, buildsList) {
 async function getBuildDetails(currentConfigId) {
     const response = await api.get(URL_API_BUILD_LIST, { params: API_BUILD_LIST_PARAMS });
     if (response.status !== 200) {
-        throw makeError(response.status, 'getBuildDetails=> ' + JSON.stringify(response));
+        throw makeError(response.status, 'getBuildDetails=> ' + JSON.stringify(response.data));
     }
     if (!response.data || !response.data.data || response.data.data.length === 0) {
         console.log(`NO BUILDS FOUND ON ${API_BASE_URL}`);
@@ -68,7 +69,7 @@ async function getBuildDetails(currentConfigId) {
     // выбрать билд из списка
     const buildData = await selectBuild(currentConfigId, response.data.data);
     if (!buildData) {
-        console.log(`NO APPROPRIATE BUILD FOUND WITH STATUS WAITING`);
+        console.log(`NO TASKS: NO BUILDS WITH STATUS WAITING`);
         return null;
     }
     return {
@@ -98,7 +99,7 @@ async function startBuild(nextBuild) {
     console.log('startBuild');
     const agent = getFreeAgent();
     if (!agent) return false;
-    const response = await axios.post(`${agent.host}:${agent.port}`, nextBuild);
+    const response = await axios.post(`${agent.host}:${agent.port}${URL_AGENT_BUILD}`, nextBuild);
     if (response.status === 200) {
         return true;
     }
@@ -113,8 +114,9 @@ async function postStartBuild(buildId, dateTime) {
         'dateTime': dateTime
     });
     if (response.status !== 200) {
-        throw makeError(response.status, 'postStartBuild=> ' + JSON.stringify(response));
+        throw makeError(response.status, 'postStartBuild=> ' + JSON.stringify(response.data));
     }
+    console.log('API was notified about new build  start');
 }
 
 // Ходит за заданиями на сборку в базу (API) 
@@ -122,21 +124,24 @@ async function postStartBuild(buildId, dateTime) {
 // Потом принимает результаты сборки и записывает их в БД (API).
 async function processBuilds() {
     console.log('processBuilds function');
+    console.log('agentList: ', agentList);
     try {
         const nextBuild = await getNextBuild();
-        console.log(nextBuild);
+        console.log('nextBuild: ', nextBuild);
        
-        const dateTime = new Date().toISOString();
-        // отправить задание агенту 
-        const isRun = await startBuild(nextBuild);
-        // отправить POST на /build/start с buildId и dateTime
-        if (isRun) {
-            await postStartBuild(nextBuild.buildId, dateTime);
+        if (nextBuild) {
+            const dateTime = new Date().toISOString();
+            // отправить задание агенту 
+            const isRun = await startBuild(nextBuild);
+            // отправить POST на /build/start с buildId и dateTime
+            if (isRun) {
+                await postStartBuild(nextBuild.buildId, dateTime);
+            }
         }
     } catch(err) {
         printError(err);
     }
-    //setTimeout(await processBuilds, BUILD_REQUEST_DELAY);
+    setTimeout(await processBuilds, BUILD_REQUEST_DELAY);
 }
 
 module.exports = { processBuilds }

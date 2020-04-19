@@ -1,5 +1,5 @@
 let agentList = [];
-let currentAgentNumber = 1;
+let currentAgentNumber = 0;
 const FREE_STATUS = 'Free';
 const BUSY_STATUS = 'Busy';
 
@@ -38,6 +38,7 @@ function getFreeAgent() {
 }
 
 module.exports = {
+    agentList,
     currentAgentNumber,
     FREE_STATUS,
     BUSY_STATUS,

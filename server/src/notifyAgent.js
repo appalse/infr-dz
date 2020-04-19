@@ -1,0 +1,21 @@
+let {currentAgentNumber, addAgent} = require('./agentList');
+const {printError} = require('./utils');
+
+//  зарегистрировать агента. В параметрах хост и порт, на котором запущен агент
+async function notifyAgent(req, res) {
+    console.log('POST /notify-agent');
+    try {
+        if (req.body && req.body.agentHost && req.body.agentPort) {
+            ++currentAgentNumber;
+            addAgent(req.body.agentHost, req.body.agentPort, currentAgentNumber);
+            res.status(200).send({data: "Agent was registrated with success"});
+        } else {
+            res.status(500).send({data: "Agent was not registrated. Incorrect request body"});
+        }
+    } catch(err) {
+        printError(err);
+    }
+    res.end();
+};
+
+module.exports = { notifyAgent }

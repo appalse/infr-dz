@@ -1,5 +1,4 @@
 function makeError(status, message) {
-    console.log('makeError: ', status, message);
     return {
         data: message,
         status: status

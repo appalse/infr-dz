@@ -1,6 +1,6 @@
 const path = require('path');
 
-const BUILD_REQUEST_DELAY = 5000;
+const BUILD_REQUEST_DELAY = 4000;
 
 // настройки из конфига билд сервера
 const config = require(path.resolve(__dirname, './../server-conf.json'));
@@ -14,6 +14,7 @@ const URL_NOTIFY_BUILD_REQUEST  = '/notify-build-result';
 const URL_API_BUILD_LIST = '/build/list';
 const URL_API_CONF = '/conf';
 const URL_API_BUILD_START = '/build/start';
+const URL_API_BUILD_FINISH = '/build/finish';
 const URL_AGENT_BUILD = '/build';
 
 const API_BUILD_LIST_PARAMS = {
@@ -31,6 +32,7 @@ module.exports = {
     URL_API_BUILD_LIST,
     URL_API_CONF,
     URL_API_BUILD_START,
+    URL_API_BUILD_FINISH,
     URL_AGENT_BUILD,
     API_BUILD_LIST_PARAMS
 }

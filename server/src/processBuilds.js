@@ -51,7 +51,6 @@ async function selectBuild(currentConfigId, buildsList) {
             result = {};
             result['buildId'] = build.id;
             result['commitHash'] = build.commitHash;
-            result['branchName'] = build.branchName;
         }
     });
     return result;
@@ -74,8 +73,7 @@ async function getBuildDetails(currentConfigId) {
     }
     return {
         buildId: buildData.buildId,
-        commitHash: buildData.commitHash,
-        branchName: buildData.branchName
+        commitHash: buildData.commitHash
     };
 }
 
@@ -89,8 +87,7 @@ async function getNextBuild() {
         repoName: config.repoName,
         buildCommand: config.buildCommand,
         buildId: build.buildId,
-        commitHash: build.commitHash,
-        branchName: build.branchName
+        commitHash: build.commitHash
     }
 }
 
@@ -124,10 +121,8 @@ async function postStartBuild(buildId, dateTime) {
 // Потом принимает результаты сборки и записывает их в БД (API).
 async function processBuilds() {
     console.log('processBuilds function');
-    console.log('agentList: ', agentList);
     try {
         const nextBuild = await getNextBuild();
-        console.log('nextBuild: ', nextBuild);
        
         if (nextBuild) {
             const dateTime = new Date().toISOString();
@@ -135,7 +130,7 @@ async function processBuilds() {
             const isRun = await startBuild(nextBuild);
             // отправить POST на /build/start с buildId и dateTime
             if (isRun) {
-                //await postStartBuild(nextBuild.buildId, dateTime);
+                await postStartBuild(nextBuild.buildId, dateTime);
             }
         }
     } catch(err) {

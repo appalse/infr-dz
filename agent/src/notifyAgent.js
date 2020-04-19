@@ -5,7 +5,7 @@ const { PORT,
         SERVER_HOST,
         URL_NOTIFY_AGENT,
         SERVER_NOT_RUNNING,
-        ENOTFOUND } = require('./constants');
+        ENOTFOUND, ECONNREFUSED } = require('./constants');
 const {makeError, printError} = require('./utils');
 
 
@@ -23,10 +23,13 @@ async function notifyAgent() {
         console.log('Server response: ', response.data.data);
     } catch(err) {
         // Агент должен корректно обрабатывать ситуацию, когда при старте не смог соединиться с сервером.
-        if (err.isAxiosError && err.errno === ENOTFOUND) {
-            console.log('BUILD SERVER IS NOT RUNNING. TERMINATE THIS AGENT WITH CODE: ', SERVER_NOT_RUNNING); 
+        if (err.isAxiosError && (err.errno === ENOTFOUND || err.errno === ECONNREFUSED)) {
+            console.error('BUILD SERVER IS NOT RUNNING. TERMINATE THIS AGENT WITH CODE: ', SERVER_NOT_RUNNING); 
+        } else if (err.isAxiosError) {
+            console.error('AxiosError: ', err.errno);
+        } else {
+            printError(err);
         }
-        printError(err);
         process.exit(SERVER_NOT_RUNNING);
     }
 }

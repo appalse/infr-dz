@@ -18,6 +18,7 @@ const SERVER_NOT_RUNNING = 25;
 
 // error
 const ENOTFOUND = 'ENOTFOUND';
+const ECONNREFUSED = 'ECONNREFUSED';
 
 module.exports = {
     PORT,
@@ -29,5 +30,6 @@ module.exports = {
     URL_AGENT_BUILD,
     OK,
     SERVER_NOT_RUNNING,
-    ENOTFOUND
+    ENOTFOUND,
+    ECONNREFUSED
 }

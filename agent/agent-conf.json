@@ -1,6 +1,6 @@
 {
-    "host": "localhost",
+    "host": "http://localhost",
     "port": 8081,
-    "serverHost": "localhost",
+    "serverHost": "http://localhost",
     "serverPort": 8080
 }
